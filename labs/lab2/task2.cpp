@@ -10,7 +10,15 @@ uchar threshold(uchar channelVal, int thresholdVal){
     return channelVal < thresholdVal ? 0 : 255;
 }
 
-uchar convolve(Mat *image, int x, int y,)
+uchar convolve(Mat *image, int x, int y){
+    int total = 0;
+    for (int i=0; i<3; i++){
+        for (int j=0; j<3; j++){
+            total += (int) image->at(y-i, x-j);
+        }
+    }
+    return (uchar) (total/9);
+}
 
 int main(int argc, char *argv[]) {
     int thresholdVal = (argc<2) ? 128: atoi(argv[1]);
@@ -26,10 +34,6 @@ int main(int argc, char *argv[]) {
     // NOTE: The perimeter rows/cols are ignored
     for (int y=1; y<image.rows-1; y++){
         for (int x=1; x<image.cols-1; x++){
-
-
-
-            
 
             output.at<Vec3b>(y,x) = convolve(&image, x, y);
 
