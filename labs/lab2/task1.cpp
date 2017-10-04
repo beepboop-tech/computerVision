@@ -9,7 +9,14 @@ using namespace cv;
 using namespace std;
 
 void mandrill0(Mat *image,  Mat *output) {
+    cvtColor(*image, *output, CV_BGR2HSV);
 
+    for (int y=0; y<image->rows; y++){
+        for (int x=0; x<image->cols; x++){
+            output->at<Vec3b>(y, x)[0] += -56;
+        }
+    }
+    cvtColor(*output, *output, CV_HSV2BGR);
 }
 
 // Shifts the red channel of the image a certain amount.
@@ -48,7 +55,7 @@ void mandrill2(Mat *image, Mat *output) {
 
 void mandrill3(Mat *image, Mat *output) {
     //output = Mat(image->rows, iamge->cols, )
-    cvtColor(*image, *output, COLOR_BGR2HSV);
+    // cvtColor(*image, *output, COLOR_BGR2HSV);
 
     // for (int y=0; y<image->rows; y++){
     //     for (int x=0; x<image->cols; x++){
