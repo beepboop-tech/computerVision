@@ -22,13 +22,13 @@ uchar convolve(Mat *image, int x, int y){
 int main(int argc, char *argv[]) {
     // Read in the image
     Mat image  = imread("images/mandrill.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-    Mat output = Mat(image.rows-2, image.cols-2, CV_8UC1);
+    Mat output = Mat(image.rows-2, image.cols-2, CV_8U);
 
     // Iterate through each pixel
     // NOTE: The perimeter rows/cols are ignored
     for (int y=1; y<image.rows-1; y++){
         for (int x=1; x<image.cols-1; x++){
-            output.at<Vec3b>(y,x) = convolve(&image, x, y);
+            output.at<uchar>(y,x) = convolve(&image, x, y);
         }
     }
 
