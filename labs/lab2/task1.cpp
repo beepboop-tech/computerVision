@@ -47,7 +47,14 @@ void mandrill2(Mat *image, Mat *output) {
 }
 
 void mandrill3(Mat *image, Mat *output) {
+    //output = Mat(image->rows, iamge->cols, )
+    cvtColor(*image, *output, COLOR_BGR2HSV);
 
+    // for (int y=0; y<image->rows; y++){
+    //     for (int x=0; x<image->cols; x++){
+    //         output->at<Vec3b>(y, x) = image->at<Vec3b>(y, x);
+    //     }
+    // }
 }
 
 int main(int argc, char *argv[]) {
@@ -81,7 +88,7 @@ int main(int argc, char *argv[]) {
             break;
         case 3:
             image = imread("images/mandrill3.jpg", CV_LOAD_IMAGE_COLOR);
-            newImage = Mat(image.rows, image.cols, CV_8UC3);
+            // newImage = Mat(image.rows, image.cols, CV_8UC3);
             mandrill3(&image, &newImage);
             break;
         default:
