@@ -8,7 +8,9 @@
 using namespace cv;
 using namespace std;
 
+// The image's hue was shifted
 void mandrill0(Mat *image,  Mat *output) {
+    // Convert to HSV so that we can edit hue
     cvtColor(*image, *output, CV_BGR2HSV);
 
     for (int y=0; y<image->rows; y++){
@@ -16,10 +18,11 @@ void mandrill0(Mat *image,  Mat *output) {
             output->at<Vec3b>(y, x)[0] += -56;
         }
     }
+    // convert back to BRG for presntation
     cvtColor(*output, *output, CV_HSV2BGR);
 }
 
-// Shifts the red channel of the image a certain amount.
+// The image's red channel was shifted
 void mandrill1(Mat *image, Mat *output) {
     int shift = 30; // pixels
 
@@ -38,30 +41,22 @@ void mandrill1(Mat *image, Mat *output) {
     }
 }
 
-// Hypothisises:
-//      mandrill2 is the inverse
+// The omage was inverted
 void mandrill2(Mat *image, Mat *output) {
     Vec3b v = Vec3b(255, 255, 255);
 
-    // Iterate through each pixel
     for (int y=0; y<image->rows; y++){
         for (int x=0; x<image->cols; x++){
-            // Do the thresholding
             Vec3b pixel = image->at<Vec3b>(y,x);
             output->at<Vec3b>(y, x) = v - pixel;
         }
     }
 }
 
+// The image was in HSV colourspace
+// 'imshow' expects BGR
 void mandrill3(Mat *image, Mat *output) {
-    //output = Mat(image->rows, iamge->cols, )
-    // cvtColor(*image, *output, COLOR_BGR2HSV);
-
-    // for (int y=0; y<image->rows; y++){
-    //     for (int x=0; x<image->cols; x++){
-    //         output->at<Vec3b>(y, x) = image->at<Vec3b>(y, x);
-    //     }
-    // }
+    cvtColor(*image, *output, COLOR_HSV2BGR);
 }
 
 int main(int argc, char *argv[]) {
@@ -71,10 +66,6 @@ int main(int argc, char *argv[]) {
     }
 
     int imageIndex = atoi(argv[1]);
-
-    // Read in the image
-    //stringstream fileName = "images/mandrill" << imageIndex << ".jpg";
-
     Mat image, newImage;
 
     switch (imageIndex) {
@@ -95,7 +86,6 @@ int main(int argc, char *argv[]) {
             break;
         case 3:
             image = imread("images/mandrill3.jpg", CV_LOAD_IMAGE_COLOR);
-            // newImage = Mat(image.rows, image.cols, CV_8UC3);
             mandrill3(&image, &newImage);
             break;
         default:
