@@ -6,6 +6,8 @@
 
 #define KERNEL_SIZE 3
 #define ADJUSTMENT (KERNEL_SIZE-1)/2
+#define KERNEL_TYPE char
+#define KERNEL_CV_TYPE CV_8S
 
 using namespace cv;
 using namespace std;
@@ -37,12 +39,14 @@ uchar convolvePixel(Mat &input,
 
     for (int y=0; y<kernel.rows; y++) {
         for (int x=0; x<kernel.cols; x++) {
-            totalKernelWeight += kernel.at<uchar>(y, x);
-            sum += input.at<uchar>(row + y - ADJUSTMENT, col + x - ADJUSTMENT) * kernel.at<char>(y, x);
+            totalKernelWeight += (int)kernel.at<KERNEL_TYPE>(y, x);
+            sum += ((int)input.at<uchar>(row + y - ADJUSTMENT, col + x - ADJUSTMENT)) * ((int)kernel.at<KERNEL_TYPE>(y, x));
         }
     }
 
-    return (uchar)(sum / totalKernelWeight);
+    int correctedWeight = totalKernelWeight == 0 ? 1 : totalKernelWeight;
+
+    return (uchar)(sum / correctedWeight);
 }
 
 void convolve(Mat &input, Mat &kernel, Mat &output){
@@ -59,15 +63,17 @@ void convolve(Mat &input, Mat &kernel, Mat &output){
 
 int main(int argc, char *argv[]) {
     // Read in the image
-    Mat image = imread("images/coins3.png", CV_LOAD_IMAGE_COLOR);
+    Mat image = imread("images/coins1.png", CV_LOAD_IMAGE_COLOR);
     Mat greyscale;
     cvtColor(image, greyscale, CV_BGR2GRAY);
 
     Mat output;
 
-    const int kernelSize = 3;
-    char k[kernelSize][kernelSize] = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
-    Mat kernel(kernelSize, kernelSize, CV_8S, k);
+    KERNEL_TYPE k[KERNEL_SIZE][KERNEL_SIZE] = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
+    //KERNEL_TYPE k[KERNEL_SIZE][KERNEL_SIZE] = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
+    Mat kernel(KERNEL_SIZE, KERNEL_SIZE, KERNEL_CV_TYPE, k);
+
+
 
     convolve(greyscale, kernel, output);
 
