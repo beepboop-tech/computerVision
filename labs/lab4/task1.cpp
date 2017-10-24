@@ -4,6 +4,9 @@
 #include <opencv/cxcore.h>
 #include <algorithm>
 
+#define KERNEL_SIZE 3
+#define ADJUSTMENT (KERNEL_SIZE-1)/2
+
 using namespace cv;
 using namespace std;
 
@@ -27,9 +30,7 @@ SobelData::SobelData(Mat inputImage):image(inputImage){
 uchar convolvePixel(Mat &input,
                     Mat &kernel,
                     const int row,
-                    const int col,
-                    const int rowAdjustment,
-                    const int colAdjustment) {
+                    const int col) {
 
     int totalKernelWeight = 0;
     int sum = 0;
@@ -37,7 +38,7 @@ uchar convolvePixel(Mat &input,
     for (int y=0; y<kernel.rows; y++) {
         for (int x=0; x<kernel.cols; x++) {
             totalKernelWeight += kernel.at<uchar>(y, x);
-            sum += input.at<uchar>(row + y - rowAdjustment, col + x - colAdjustment) * kernel.at<char>(y, x);
+            sum += input.at<uchar>(row + y - ADJUSTMENT, col + x - ADJUSTMENT) * kernel.at<char>(y, x);
         }
     }
 
@@ -47,15 +48,13 @@ uchar convolvePixel(Mat &input,
 void convolve(Mat &input, Mat &kernel, Mat &output){
     output.create(input.size(), CV_8U);
 
-    const int rowAdjustment = (kernel.rows - 1) / 2;
-    const int colAdjustment = (kernel.cols - 1) / 2;
-
-    for (int row=rowAdjustment; row<input.rows-rowAdjustment; row++){
-        for (int col=colAdjustment; col<input.cols-colAdjustment; col++){
-            output.at<uchar>(row, col) = convolvePixel(input, kernel, row, col, rowAdjustment, colAdjustment);
+    for (int row=ADJUSTMENT; row<input.rows-ADJUSTMENT; row++){
+        for (int col=ADJUSTMENT; col<input.cols-ADJUSTMENT; col++){
+            output.at<uchar>(row, col) = convolvePixel(input, kernel, row, col);
         }
     }
 }
+
 
 
 int main(int argc, char *argv[]) {
