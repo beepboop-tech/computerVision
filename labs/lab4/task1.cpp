@@ -29,7 +29,7 @@ SobelData::SobelData(Mat inputImage):image(inputImage){
 }
 
 
-uchar convolvePixel(Mat &input,
+KERNEL_TYPE convolvePixel(Mat &input,
                     Mat &kernel,
                     const int row,
                     const int col) {
@@ -46,11 +46,19 @@ uchar convolvePixel(Mat &input,
 
     int correctedWeight = totalKernelWeight == 0 ? 1 : totalKernelWeight;
 
-    return (uchar)(sum / correctedWeight);
+    if (sum / correctedWeight < -128) {
+        return -128;
+    }
+
+    if (sum / correctedWeight > 128) {
+        return 127;
+    }
+
+    return (KERNEL_TYPE)(sum / correctedWeight);
 }
 
 void convolve(Mat &input, Mat &kernel, Mat &output){
-    output.create(input.size(), CV_8U);
+    output.create(input.size(), KERNEL_CV_TYPE);
 
     for (int row=ADJUSTMENT; row<input.rows-ADJUSTMENT; row++){
         for (int col=ADJUSTMENT; col<input.cols-ADJUSTMENT; col++){
@@ -69,8 +77,9 @@ int main(int argc, char *argv[]) {
 
     Mat output;
 
-    KERNEL_TYPE k[KERNEL_SIZE][KERNEL_SIZE] = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
+    //KERNEL_TYPE k[KERNEL_SIZE][KERNEL_SIZE] = {{-1, 0, 1}, {-1, 0, 1}, {-1, 0, 1}};
     //KERNEL_TYPE k[KERNEL_SIZE][KERNEL_SIZE] = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
+    KERNEL_TYPE k[KERNEL_SIZE][KERNEL_SIZE] = {{-1, 0, 1}, {-2, 0, 2}, {-1, -0, 1}};
     Mat kernel(KERNEL_SIZE, KERNEL_SIZE, KERNEL_CV_TYPE, k);
 
 
